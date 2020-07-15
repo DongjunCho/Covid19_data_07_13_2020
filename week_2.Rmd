@@ -1,0 +1,40 @@
+---
+title: "R Markdown and Leaflet"
+author: "Dongjun_Cho"
+date: "7/14/2020"
+output:
+  pdf_document: default
+  html_document: default
+---
+
+## Introduction
+This project was created as part of the Developing Data Products course of the Coursera Data Science Specialization.The goal of the project is to create a web page using R Markdown that features a map created with Leaflet, and to host the resulting web page on either GitHub Pages, RPubs, or NeoCities.
+
+## Summary
+I analyzed recent(7/13/2020) Covid-19 Confirmed cases and deaths in the United States. The data is from [covid 19 New York Times data](https://github.com/nytimes/covid-19-data)
+
+
+```{r}
+library(leaflet)
+
+data <- read.csv(file="C:/Users/dongj/Desktop/R_data_Desk/Developing_Data_Product/week_2/us-states.csv", header =TRUE, sep =",")
+
+data$popup_case <- do.call(paste, c(data[c("state", "cases")], sep = "     Confirmed cases:   "))
+
+data$popup_death <- do.call(paste, c(data[c("state", "deaths")], sep = "     Total Deaths:   "))
+
+my_map <- data %>%
+    leaflet() %>%
+      addTiles(group = "Confirmed Cases", options=providerTileOptions(noWrap = TRUE)) %>% 
+    addTiles(group="Deaths", options=providerTileOptions(noWrap = TRUE)) %>%
+    addCircles(weight =2, radius =(data$cases), popup = strwrap(data$popup_case), group ="Confirmed Cases", color="red" ) %>%
+   addCircles(weight =2, radius =(data$deaths), popup = strwrap(data$popup_death), group ="Deaths" , color="black")%>%
+  addLayersControl(
+    baseGroups = c("Confirmed Cases", "Deaths"),
+    options = layersControlOptions(collapsed = FALSE)
+  )
+
+my_map
+
+
+```
